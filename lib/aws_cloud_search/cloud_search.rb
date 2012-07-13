@@ -16,11 +16,15 @@ module AWSCloudSearch
       raise ArgumentError.new("Invalid argument. Expected DocumentBatch, got #{doc_batch.class}.") unless doc_batch.is_a? DocumentBatch
 
       resp = @doc_conn.post do |req|
+        AWSCloudSearch.logger.debug("============\nREQUEST:\n#{@search_conn.host}/#{AWSCloudSearch::API_VERSION}/documents/batch with #{doc_batch.to_json}")
+        
         req.url "/#{AWSCloudSearch::API_VERSION}/documents/batch"
         req.headers['Content-Type'] = 'application/json'
         req.body = doc_batch.to_json
       end
       raise(Exception, "AwsCloudSearchCloud::DocumentService batch returned #{resp.body[:errors].size} errors: #{resp.body[:errors].join(';')}") if resp.body[:status] == 'error'
+      AWSCloudSearch.logger.debug("RESPONSE:\n#{resp.body}\n============")
+      
       resp.body
     end
 
