@@ -26,8 +26,12 @@ module AWSCloudSearch
     # Sends the batch of adds and deletes to CloudSearch Search and then clears the current batch.
     # TODO: (dj) implement connection retry logic
     def flush
-      @cs.documents_batch @batch
-      @batch.clear
+      if @batch.size > 0
+        @cs.documents_batch @batch
+        @batch.clear
+      else
+        AWSCloudSearch.logger.debug("Ignoring empty batch")
+      end
     end
 
   end
